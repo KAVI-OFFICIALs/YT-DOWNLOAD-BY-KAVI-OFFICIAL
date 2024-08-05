@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        #container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .video {
+            background: #f00;
+            color: #fff;
+        }
+        .mp3 {
+            background: #0a0;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>YouTube Video Downloader</h1>
+        <input type="text" id="youtubeLink" placeholder="Enter YouTube Video Link">
+        <br>
+        <button class="video" onclick="download('video')">Download Video</button>
+        <button class="mp3" onclick="download('mp3')">Download MP3</button>
+    </div>
+
+    <script>
+        async function download(format) {
+            const link = document.getElementById('youtubeLink').value;
+            if (link) {
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: link, format: format })
+                });
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = format === 'mp3' ? 'download.mp3' : 'download.mp4';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('Please enter a valid YouTube link.');
+            }
+        }
+    </script>
+</body>
+</html>
